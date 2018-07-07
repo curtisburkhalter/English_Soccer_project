@@ -61,6 +61,17 @@ ggplot(data = ., aes(x = seasons_rep, y = FTotal, fill = seasons_rep)) +
   labs(title = "Annual distribution of total team goals scored", subtitle = "Includes only the top 6 teams per year") +
   guides(fill = FALSE)
 
+#look at goals scored by teams ranked 7 - 17 at end of season
+For_Mids <- combined %>%
+  filter(Position >= 7 & Position <= 17) %>%
+  ggplot(data = ., aes(x = seasons_rep, y = FTotal, fill = seasons_rep)) +
+  geom_boxplot() +
+  geom_smooth(method = "loess", aes(group = 1), se = FALSE, color = "black", lty = 2) +
+  ylab("Number of goals") +
+  xlab("Season") + 
+  ylim(20,110) +
+  labs(title = "Annual distribution of total team goals allowed", subtitle = "Includes only teams ranked 7 - 17 annually") +
+  guides(fill = FALSE)
 
 #look at goals scored by bottom 3 teams (i.e. those who are relegated at end of season) for changes
 #through time; question being are the bottom 3 teams scoring more/less goals through time
@@ -76,7 +87,7 @@ For_bottom3 <- combined %>%
   guides(fill = FALSE)
 
 #plot annual total goals for broken out by top 6 and bottom 3 teams
-grid.arrange(For_top6,For_bottom3, nrow = 1, ncol = 2)
+grid.arrange(For_top6, For_Mids, For_bottom3, nrow = 1, ncol = 3)
 
 #look at goals allowed by top 6 teams (i.e. those who qualify for either Champions League or Europa League) for changes
 #through time; question being are the top 6 teams scoring more/less goals through time
@@ -89,6 +100,19 @@ Against_top6 <- combined %>%
   xlab("Season") +
   ylim(20,90) +
   labs(title = "Annual distribution of total team goals allowed", subtitle = "Includes only the top 6 teams per year") +
+  guides(fill = FALSE)
+
+
+#look at goals scored by teams ranked 6 - 17 at end of season
+Against_Mids <- combined %>%
+  filter(Position >= 7 & Position <= 17) %>%
+  ggplot(data = ., aes(x = seasons_rep, y = ATotal, fill = seasons_rep)) +
+  geom_boxplot() +
+  geom_smooth(method = "loess", aes(group = 1), se = FALSE, color = "black", lty = 2) +
+  ylab("Number of goals") +
+  xlab("Season") + 
+  ylim(20,90) +
+  labs(title = "Annual distribution of total team goals allowed", subtitle = "Includes only teams ranked 7 - 17 annually") +
   guides(fill = FALSE)
 
 #look at goals allowed by bottom 3 teams (i.e. those who are relegated at end of season) for changes
@@ -105,4 +129,8 @@ Against_bottom3 <- combined %>%
   guides(fill = FALSE)
 
 #plot annual total goals against broken out by top 6 and bottom 3 teams
-grid.arrange(Against_top6,Against_bottom3, nrow = 1, ncol = 2)
+grid.arrange(Against_top6, Against_Mids, Against_bottom3, nrow = 1, ncol = 3)
+
+
+
+
