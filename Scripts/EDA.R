@@ -17,12 +17,13 @@ combined %>%
 group_by(Team) %>%
 summarize(Total = n()) %>%
 arrange(., desc(Total)) %>%
-ggplot(data = ., aes(x = reorder(Team,-Total), y = Total, fill = Team)) +
+ggplot(data = ., aes(x = reorder(Team,-Total), y = Total, fill = Total)) +
   geom_col() +
   coord_flip() +
   guides(fill = FALSE) +
   xlab("Team") +
   scale_y_continuous(breaks = seq(0,10,1)) +
+  scale_fill_gradient(low = "red", high = "green") +
   ylab("Total seasons in Premier League from 2008 - 2018")
 
 #look at distribution of goals for and goals against for each year
