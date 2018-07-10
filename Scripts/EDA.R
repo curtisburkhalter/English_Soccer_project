@@ -139,4 +139,127 @@ grid.arrange(Against_top6, Against_Mids, Against_bottom3, nrow = 1, ncol = 3)
 
 ggsave("Total_team_goals_allowed.png", path = here("English_Soccer_project","EDA_Figures"), device = "png", dpi = 400)
 
+#####################################################################
+#Create the same series of graphs created above but instead of
+#looking simply at the total number of goals for/against, look 
+#at the number for/against per game
+
+#first need to change the column headings FPer Game and APer Game to include no
+#blank space
+colnames(combined)[grep(".*Per",colnames(combined))] <- gsub("Per ", "Per_",colnames(combined)[grep(".*Per",colnames(combined))])
+
+#range of FPer_Game and range of APer_Game
+rng_FPer <- range(combined$FPer_Game)
+rng_APer <- range(combined$APer_Game)
+
+#look at distribution of goals for and goals against for each year
+ForPer_overall <- ggplot(combined, aes(x = seasons_rep, y = FPer_Game, fill = seasons_rep)) +
+  geom_boxplot() +
+  geom_smooth(method = "loess", aes(group = 1), se = FALSE, color = "black", lty = 2) +
+  ylab("Number of goals per game") +
+  xlab("Season") +
+  ylim(rng_APer[1] - 0.10, rng_FPer[2] + 0.10) +
+  labs(title = "Annual distribution of total team goals scored") +
+  guides(fill = FALSE)
+
+AgainstPer_overall <- ggplot(combined, aes(x = seasons_rep, y = APer_Game, fill = seasons_rep)) +
+  geom_boxplot() +
+  geom_smooth(method = "loess", aes(group = 1), se = FALSE, color = "black", lty = 2) +
+  ylab("Number of goals per game") +
+  xlab("Season") +
+  ylim(rng_APer[1] - 0.10, rng_FPer[2] + 0.10) +
+  labs(title = "Annual distribution of total team goals allowed") +
+  guides(fill = FALSE)
+
+#plot annual total goals for and total goals against across all teams
+grid.arrange(ForPer_overall,AgainstPer_overall, nrow = 1, ncol =2)
+
+ggsave("Total_team_goals_scored_vs_allowedPerGame_ALL_TEAMS.png", path = here("English_Soccer_project","EDA_Figures"), device = "png", dpi = 400)
+
+#look at goals scored by top 6 teams (i.e. those who qualify for either Champions League or Europa League) for changes
+#through time; question being are the top 6 teams scoring more/less goals through time
+ForPer_top6 <- combined %>%
+  filter(Position <= 6) %>%
+  ggplot(data = ., aes(x = seasons_rep, y = FPer_Game, fill = seasons_rep)) +
+  geom_boxplot() +
+  geom_smooth(method = "loess", aes(group = 1), se = FALSE, color = "black", lty = 2) +
+  ylab("Number of goals per game") +
+  xlab("Season") +
+  ylim(rng_APer[1] - 0.10, rng_FPer[2] + 0.10) +
+  labs(title = "Annual distribution of total team goals scored", subtitle = "Includes only the top 6 teams per year") +
+  guides(fill = FALSE)
+
+#look at goals scored by teams ranked 7 - 17 at end of season
+ForPer_Mids <- combined %>%
+  filter(Position >= 7 & Position <= 17) %>%
+  ggplot(data = ., aes(x = seasons_rep, y = FPer_Game, fill = seasons_rep)) +
+  geom_boxplot() +
+  geom_smooth(method = "loess", aes(group = 1), se = FALSE, color = "black", lty = 2) +
+  ylab("Number of goals per game") +
+  xlab("Season") + 
+  ylim(rng_APer[1] - 0.10, rng_FPer[2] + 0.10) +
+  labs(title = "Annual distribution of total team goals scored", subtitle = "Includes only teams ranked 7 - 17 annually") +
+  guides(fill = FALSE)
+
+#look at goals scored by bottom 3 teams (i.e. those who are relegated at end of season) for changes
+#through time; question being are the bottom 3 teams scoring more/less goals through time
+ForPer_bottom3 <- combined %>%
+  filter(Position >= 18) %>%
+  ggplot(data = ., aes(x = seasons_rep, y = FPer_Game, fill = seasons_rep)) +
+  geom_boxplot() +
+  geom_smooth(method = "loess", aes(group = 1), se = FALSE, color = "black", lty = 2) +
+  ylab("Number of goals per game") +
+  xlab("Season") +
+  ylim(rng_APer[1] - 0.10, rng_FPer[2] + 0.10) +
+  labs(title = "Annual distribution of total team goals scored", subtitle = "Includes only the bottom 3 teams per year") +
+  guides(fill = FALSE)
+
+#plot annual total goals for broken out by top 6 and bottom 3 teams
+grid.arrange(ForPer_top6, ForPer_Mids, ForPer_bottom3, nrow = 1, ncol = 3)
+
+ggsave("Total_team_goals_scoredPerGame.png", path = here("English_Soccer_project","EDA_Figures"), device = "png", dpi = 400)
+
+#look at goals allowed by top 6 teams (i.e. those who qualify for either Champions League or Europa League) for changes
+#through time; question being are the top 6 teams scoring more/less goals through time
+AgainstPer_top6 <- combined %>%
+  filter(Position <= 6) %>%
+  ggplot(data = ., aes(x = seasons_rep, y = APer_Game, fill = seasons_rep)) +
+  geom_boxplot() +
+  geom_smooth(method = "loess", aes(group = 1), se = FALSE, color = "black", lty = 2) +
+  ylab("Number of goals per game") +
+  xlab("Season") +
+  ylim(rng_APer[1] - 0.10, rng_APer[2] + 0.10) +
+  labs(title = "Annual distribution of total team goals allowed", subtitle = "Includes only the top 6 teams per year") +
+  guides(fill = FALSE)
+
+
+#look at goals scored by teams ranked 6 - 17 at end of season
+AgainstPer_Mids <- combined %>%
+  filter(Position >= 7 & Position <= 17) %>%
+  ggplot(data = ., aes(x = seasons_rep, y = APer_Game, fill = seasons_rep)) +
+  geom_boxplot() +
+  geom_smooth(method = "loess", aes(group = 1), se = FALSE, color = "black", lty = 2) +
+  ylab("Number of goals per game") +
+  xlab("Season") + 
+  ylim(rng_APer[1] - 0.10, rng_APer[2] + 0.10) +
+  labs(title = "Annual distribution of total team goals allowed", subtitle = "Includes only teams ranked 7 - 17 annually") +
+  guides(fill = FALSE)
+
+#look at goals allowed by bottom 3 teams (i.e. those who are relegated at end of season) for changes
+#through time; question being are the bottom 3 teams scoring more/less goals through time
+AgainstPer_bottom3 <- combined %>%
+  filter(Position >= 18) %>%
+  ggplot(data = ., aes(x = seasons_rep, y = APer_Game, fill = seasons_rep)) +
+  geom_boxplot() +
+  geom_smooth(method = "loess", aes(group = 1), se = FALSE, color = "black", lty = 2) +
+  ylab("Number of goals per game") +
+  xlab("Season") + 
+  ylim(rng_APer[1] - 0.10, rng_APer[2] + 0.10) +
+  labs(title = "Annual distribution of total team goals allowed", subtitle = "Includes only the bottom 3 teams per year") +
+  guides(fill = FALSE)
+
+#plot annual total goals against broken out by top 6 and bottom 3 teams
+grid.arrange(AgainstPer_top6, AgainstPer_Mids, AgainstPer_bottom3, nrow = 1, ncol = 3)
+
+ggsave("Total_team_goals_allowedPerGame.png", path = here("English_Soccer_project","EDA_Figures"), device = "png", dpi = 400)
 
