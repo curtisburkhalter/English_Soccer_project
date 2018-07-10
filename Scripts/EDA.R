@@ -12,6 +12,10 @@ source(here("English_Soccer_project","Scripts","ReadFiles_FromGoogleSheets.R"))
 #insert a "/" character into the seasons_rep column
 combined$seasons_rep <- paste(substr(combined$seasons_rep,1,2),"/",substr(combined$seasons_rep,3,4),sep="")
 
+#range of FPer_Game and range of APer_Game
+rng_For <- range(combined$FTotal)
+rng_Against <- range(combined$ATotal)
+
 #plot number of instances of each team was in the Premier League from 2008 - 2018
 combined %>%
 group_by(Team) %>%
@@ -34,7 +38,7 @@ For_overall <- ggplot(combined, aes(x = seasons_rep, y = FTotal, fill = seasons_
                geom_smooth(method = "loess", aes(group = 1), se = FALSE, color = "black", lty = 2) +
                ylab("Number of goals") +
                xlab("Season") +
-               ylim(20,110) +
+               ylim(rng_Against[1] - 0.10, rng_For[2] + 0.10) +
                labs(title = "Annual distribution of total team goals scored") +
                guides(fill = FALSE)
 
@@ -43,7 +47,7 @@ Against_overall <- ggplot(combined, aes(x = seasons_rep, y = ATotal, fill = seas
                    geom_smooth(method = "loess", aes(group = 1), se = FALSE, color = "black", lty = 2) +
                    ylab("Number of goals") +
                    xlab("Season") +
-                   ylim(20,110) +
+                   ylim(rng_Against[1] - 0.10, rng_For[2] + 0.10) +
                    labs(title = "Annual distribution of total team goals allowed") +
                    guides(fill = FALSE)
 
@@ -61,7 +65,7 @@ ggplot(data = ., aes(x = seasons_rep, y = FTotal, fill = seasons_rep)) +
   geom_smooth(method = "loess", aes(group = 1), se = FALSE, color = "black", lty = 2) +
   ylab("Number of goals") +
   xlab("Season") +
-  ylim(20,110) +
+  ylim(rng_Against[1] - 0.10, rng_For[2] + 0.10) +
   labs(title = "Annual distribution of total team goals scored", subtitle = "Includes only the top 6 teams per year") +
   guides(fill = FALSE)
 
@@ -73,7 +77,7 @@ For_Mids <- combined %>%
   geom_smooth(method = "loess", aes(group = 1), se = FALSE, color = "black", lty = 2) +
   ylab("Number of goals") +
   xlab("Season") + 
-  ylim(20,110) +
+  ylim(rng_Against[1] - 0.10, rng_For[2] + 0.10) +
   labs(title = "Annual distribution of total team goals scored", subtitle = "Includes only teams ranked 7 - 17 annually") +
   guides(fill = FALSE)
 
@@ -86,7 +90,7 @@ For_bottom3 <- combined %>%
   geom_smooth(method = "loess", aes(group = 1), se = FALSE, color = "black", lty = 2) +
   ylab("Number of goals") +
   xlab("Season") +
-  ylim(20,110) +
+  ylim(rng_Against[1] - 0.10, rng_For[2] + 0.10) +
   labs(title = "Annual distribution of total team goals scored", subtitle = "Includes only the bottom 3 teams per year") +
   guides(fill = FALSE)
 
@@ -104,7 +108,7 @@ Against_top6 <- combined %>%
   geom_smooth(method = "loess", aes(group = 1), se = FALSE, color = "black", lty = 2) +
   ylab("Number of goals") +
   xlab("Season") +
-  ylim(20,90) +
+  ylim(rng_Against[1] - 0.10, rng_Against[2] + 0.10) +
   labs(title = "Annual distribution of total team goals allowed", subtitle = "Includes only the top 6 teams per year") +
   guides(fill = FALSE)
 
@@ -117,7 +121,7 @@ Against_Mids <- combined %>%
   geom_smooth(method = "loess", aes(group = 1), se = FALSE, color = "black", lty = 2) +
   ylab("Number of goals") +
   xlab("Season") + 
-  ylim(20,90) +
+  ylim(rng_Against[1] - 0.10, rng_Against[2] + 0.10) +
   labs(title = "Annual distribution of total team goals allowed", subtitle = "Includes only teams ranked 7 - 17 annually") +
   guides(fill = FALSE)
 
@@ -130,7 +134,7 @@ Against_bottom3 <- combined %>%
   geom_smooth(method = "loess", aes(group = 1), se = FALSE, color = "black", lty = 2) +
   ylab("Number of goals") +
   xlab("Season") + 
-  ylim(20,90) +
+  ylim(rng_Against[1] - 0.10, rng_Against[2] + 0.10) +
   labs(title = "Annual distribution of total team goals allowed", subtitle = "Includes only the bottom 3 teams per year") +
   guides(fill = FALSE)
 
