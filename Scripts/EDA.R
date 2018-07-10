@@ -26,6 +26,8 @@ ggplot(data = ., aes(x = reorder(Team,-Total), y = Total, fill = Total)) +
   scale_fill_gradient(low = "red", high = "green") +
   ylab("Total seasons in Premier League from 2008 - 2018")
 
+ggsave("All_PL_Teams0818.png", path = here("English_Soccer_project","EDA_Figures"), device = "png", dpi = 400)
+
 #look at distribution of goals for and goals against for each year
 For_overall <- ggplot(combined, aes(x = seasons_rep, y = FTotal, fill = seasons_rep)) +
                geom_boxplot() +
@@ -47,6 +49,8 @@ Against_overall <- ggplot(combined, aes(x = seasons_rep, y = ATotal, fill = seas
 
 #plot annual total goals for and total goals against across all teams
 grid.arrange(For_overall,Against_overall, nrow = 1, ncol =2)
+
+ggsave("Total_team_goals_scored_vs_allowed_ALL_TEAMS.png", path = here("English_Soccer_project","EDA_Figures"), device = "png", dpi = 400)
 
 #look at goals scored by top 6 teams (i.e. those who qualify for either Champions League or Europa League) for changes
 #through time; question being are the top 6 teams scoring more/less goals through time
@@ -70,7 +74,7 @@ For_Mids <- combined %>%
   ylab("Number of goals") +
   xlab("Season") + 
   ylim(20,110) +
-  labs(title = "Annual distribution of total team goals allowed", subtitle = "Includes only teams ranked 7 - 17 annually") +
+  labs(title = "Annual distribution of total team goals scored", subtitle = "Includes only teams ranked 7 - 17 annually") +
   guides(fill = FALSE)
 
 #look at goals scored by bottom 3 teams (i.e. those who are relegated at end of season) for changes
@@ -88,6 +92,8 @@ For_bottom3 <- combined %>%
 
 #plot annual total goals for broken out by top 6 and bottom 3 teams
 grid.arrange(For_top6, For_Mids, For_bottom3, nrow = 1, ncol = 3)
+
+ggsave("Total_team_goals_scored.png", path = here("English_Soccer_project","EDA_Figures"), device = "png", dpi = 400)
 
 #look at goals allowed by top 6 teams (i.e. those who qualify for either Champions League or Europa League) for changes
 #through time; question being are the top 6 teams scoring more/less goals through time
@@ -131,6 +137,6 @@ Against_bottom3 <- combined %>%
 #plot annual total goals against broken out by top 6 and bottom 3 teams
 grid.arrange(Against_top6, Against_Mids, Against_bottom3, nrow = 1, ncol = 3)
 
-
+ggsave("Total_team_goals_allowed.png", path = here("English_Soccer_project","EDA_Figures"), device = "png", dpi = 400)
 
 
