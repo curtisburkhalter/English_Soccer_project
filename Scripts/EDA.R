@@ -365,3 +365,25 @@ combined_goals %>%
   labs(title = "Goal differential by season",subtitle = "Only includes those teams that were in the Premier League 8 of the last 10 seasons")
 
 ggsave("GoalDifferentialSubsetOfTeams_LineGraphs.png", path = here("English_Soccer_project","EDA_Figures","Goals_Figures"), device = "png", dpi = 400)
+
+
+#look at relationship between goals for and goals against overall
+  ggplot(combined_goals, aes(x = ATotal, y = FTotal)) +
+  geom_point(aes(color = seasons_rep)) +
+  geom_smooth(method = "loess", se = FALSE, aes(x = ATotal, y = FTotal), color = "black", lty = 2) +
+  labs(color = "Season", title = "Relationship between total goals scored vs. goals against" , subtitle = "Relationship modeled across all seasons") +
+  xlab("Goals Against") +
+  ylab("Goals Scored") +
+  ggsave("RelationshipBtwnGlsForvsAgainstOverall", path = here("English_Soccer_project","EDA_Figures","Goals_Figures"), device = "png", dpi = 400)
+
+#look at relationship between goals for and goals against overall
+combined_goals %>%
+  ggplot(., aes(x = ATotal, y = FTotal)) +
+  geom_point(color = seasons_rep) +
+  geom_smooth(method = "loess", se = FALSE, color = "black", lty = 2) +
+  facet_wrap(~seasons_rep) +
+  xlab("Goals Against") +
+  ylab("Goals Scored") +
+  labs(title = "Relationship between total goals scored vs. goals against", subtitle = "Results broken out by season") +
+  ggsave("RelationshipBtwnGlsForvsAgainstByTeam", path = here("English_Soccer_project","EDA_Figures","Goals_Figures"), device = "png", dpi = 400)
+
