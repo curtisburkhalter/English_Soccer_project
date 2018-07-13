@@ -31,6 +31,8 @@ ggplot(data = ., aes(x = reorder(Team,-Total), y = Total, fill = Total)) +
   scale_fill_gradient(low = "red", high = "green") +
   ylab("Total seasons in Premier League from 2008 - 2018")
 
+ggsave("All_PL_Teams0818.png", path = here("English_Soccer_project","EDA_Figures","Goals_Figures"), device = "png", dpi = 400)
+
 #look at distribution of goals for and goals against for each year
 For_overall <- ggplot(combined_goals, aes(x = seasons_rep, y = FTotal, fill = seasons_rep)) +
                geom_boxplot() +
@@ -51,7 +53,11 @@ Against_overall <- ggplot(combined_goals, aes(x = seasons_rep, y = ATotal, fill 
                    guides(fill = FALSE)
 
 #plot annual total goals for and total goals against across all teams
-grid.arrange(For_overall,Against_overall, nrow = 1, ncol =2)
+g <- grid.arrange(For_overall,Against_overall, nrow = 1, ncol =2)
+
+#when saving a plot generated using grid.arrange you have to assign the 
+#plot to an object and pass that object to ggsave
+ggsave("Total_team_goals_scored_vs_allowed_ALL_TEAMS.png", g, path = here("English_Soccer_project","EDA_Figures","Goals_Figures"), device = "png", dpi = 400)
 
 #look at goals scored by top 6 teams (i.e. those who qualify for either Champions League or Europa League) for changes
 #through time; question being are the top 6 teams scoring more/less goals through time
@@ -92,7 +98,9 @@ For_bottom3 <- combined_goals %>%
   guides(fill = FALSE)
 
 #plot annual total goals for broken out by top 6 and bottom 3 teams
-grid.arrange(For_top6, For_Mids, For_bottom3, nrow = 1, ncol = 3)
+g <- grid.arrange(For_top6, For_Mids, For_bottom3, nrow = 1, ncol = 3)
+
+ggsave("Total_team_goals_scored.png", g, path = here("English_Soccer_project","EDA_Figures","Goals_Figures"), device = "png", dpi = 400)
 
 #look at goals allowed by top 6 teams (i.e. those who qualify for either Champions League or Europa League) for changes
 #through time; question being are the top 6 teams scoring more/less goals through time
@@ -134,7 +142,9 @@ Against_bottom3 <- combined_goals %>%
   guides(fill = FALSE)
 
 #plot annual total goals against broken out by top 6 and bottom 3 teams
-grid.arrange(Against_top6, Against_Mids, Against_bottom3, nrow = 1, ncol = 3)
+g <- grid.arrange(Against_top6, Against_Mids, Against_bottom3, nrow = 1, ncol = 3)
+
+ggsave("Total_team_goals_allowed.png", g, path = here("English_Soccer_project","EDA_Figures","Goals_Figures"), device = "png", dpi = 400)
 
 #####################################################################
 #Create the same series of graphs created above but instead of
@@ -169,7 +179,9 @@ AgainstPer_overall <- ggplot(combined_goals, aes(x = seasons_rep, y = APer_Game,
   guides(fill = FALSE)
 
 #plot annual total goals for and total goals against across all teams
-grid.arrange(ForPer_overall,AgainstPer_overall, nrow = 1, ncol =2)
+g <- grid.arrange(ForPer_overall,AgainstPer_overall, nrow = 1, ncol =2)
+
+ggsave("Total_team_goals_scored_vs_allowedPerGame_ALL_TEAMS.png", g, path = here("English_Soccer_project","EDA_Figures","Goals_Figures"), device = "png", dpi = 400)
 
 #look at goals scored by top 6 teams (i.e. those who qualify for either Champions League or Europa League) for changes
 #through time; question being are the top 6 teams scoring more/less goals through time
@@ -210,7 +222,9 @@ ForPer_bottom3 <- combined_goals %>%
   guides(fill = FALSE)
 
 #plot annual total goals for broken out by top 6 and bottom 3 teams
-grid.arrange(ForPer_top6, ForPer_Mids, ForPer_bottom3, nrow = 1, ncol = 3)
+g <- grid.arrange(ForPer_top6, ForPer_Mids, ForPer_bottom3, nrow = 1, ncol = 3)
+
+ggsave("Total_team_goals_scoredPerGame.png", g, path = here("English_Soccer_project","EDA_Figures","Goals_Figures"), device = "png", dpi = 400)
 
 #look at goals allowed by top 6 teams (i.e. those who qualify for either Champions League or Europa League) for changes
 #through time; question being are the top 6 teams scoring more/less goals through time
@@ -252,7 +266,9 @@ AgainstPer_bottom3 <- combined_goals %>%
   guides(fill = FALSE)
 
 #plot annual total goals against broken out by top 6 and bottom 3 teams
-grid.arrange(AgainstPer_top6, AgainstPer_Mids, AgainstPer_bottom3, nrow = 1, ncol = 3)
+g <- grid.arrange(AgainstPer_top6, AgainstPer_Mids, AgainstPer_bottom3, nrow = 1, ncol = 3)
+
+ggsave("Total_team_goals_allowedPerGame.png", g, path = here("English_Soccer_project","EDA_Figures","Goals_Figures"), device = "png", dpi = 400)
 
 #look at number of top four finishes by team; needs work haven't figured out code yet
 combined_goals %>%
@@ -264,6 +280,8 @@ combined_goals %>%
   ylab("Number of times a team has finished in one of the top 4 positions") +
   labs(fill = "Final team position") +
   scale_fill_manual(labels = c("1st", "2nd", "3rd", "4th"), values = hue_pal()(4))
+
+ggsave("Number of Top 4 finishes by club.png", g, path = here("English_Soccer_project","EDA_Figures","Goals_Figures"), device = "png", dpi = 400)
 
 #look at number of bottom 3 finishes by team
 combined_goals %>%
@@ -277,6 +295,8 @@ combined_goals %>%
   labs(fill = "Final team position") +
   scale_fill_manual(labels = c("18th", "19th", "20th"), values = hue_pal()(3)) +
   coord_flip()
+
+ggsave("Number of Bottom 3 finishes by club.png", g, path = here("English_Soccer_project","EDA_Figures","Goals_Figures"), device = "png", dpi = 400)
 
 #create goal differential column; in theory this should be higher the higher up the table you go, but that does
 #not happen, could be useful for predicting a team regression in the following year
@@ -324,7 +344,9 @@ GD_bottom3 <- combined_goals %>%
   guides(fill = FALSE) 
 
 #plot annual total goals against broken out by top 6 and bottom 3 teams
-grid.arrange(GD_top6, GD_Mids, GD_bottom3, nrow = 1, ncol = 3)
+g <- grid.arrange(GD_top6, GD_Mids, GD_bottom3, nrow = 1, ncol = 3)
+
+ggsave("GoalDifferentialAcrossSeasons_BoxPlots.png", g, path = here("English_Soccer_project","EDA_Figures","Goals_Figures"), device = "png", dpi = 400)
 
 combined_goals %>%
   group_by(Team) %>%
@@ -342,3 +364,4 @@ combined_goals %>%
   facet_wrap(~Team) +
   labs(title = "Goal differential by season",subtitle = "Only includes those teams that were in the Premier League 8 of the last 10 seasons")
 
+ggsave("GoalDifferentialSubsetOfTeams_LineGraphs.png", path = here("English_Soccer_project","EDA_Figures","Goals_Figures"), device = "png", dpi = 400)
