@@ -1,0 +1,127 @@
+---
+title: "Exploratory Data Analysis of English Premier League Data"
+author: "Curtis Burkhalter"
+date: "July 13, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, comment = "#")
+suppressMessages(library(tidyverse))
+suppressMessages(library(here))
+suppressMessages(library(googlesheets))
+suppressMessages(library(gridExtra))
+suppressMessages(library(scales))
+suppressMessages(library(janitor))
+```
+
+# Quick look at the data
+We will begin by first looking at a sample of data used for this project. Specifically, this dataset consists of data on goals scored in the last 10 seasons in the English Premier League. This data was obtained from http://www.footstats.co.uk.
+
+```{r read in files, echo = FALSE, comment = "#",message = FALSE}
+combined_goals <- read_csv("C:/Users/curti/Documents/GitHub/English_Soccer_project/Data/combined_goals.csv") 
+```
+
+```{r data, comment = "#"}
+head(combined_goals)
+```
+
+Now let's take a look at all of the teams in the dataset and the number of seasons they have been in the Premier League for the last 10 years.
+```{r total seasons plot, echo=FALSE}
+#plot number of instances of each team was in the Premier League from 2008 - 2018
+combined_goals %>%
+group_by(Team) %>%
+summarize(Total = n()) %>%
+arrange(., desc(Total)) %>%
+ggplot(data = ., aes(x = reorder(Team,-Total), y = Total, fill = Total)) +
+  geom_col() +
+  coord_flip() +
+  guides(fill = FALSE) +
+  xlab("Team") +
+  scale_y_continuous(breaks = seq(0,10,1)) +
+  scale_fill_gradient(low = "red", high = "green") +
+  ylab("Total seasons in Premier League from 2008 - 2018")
+```
+
+Lets look at the range of goals scored for each team across all seasons, as well as the the goals scored against
+each team:
+
+```{r ranges of goals, comment = "#"}
+#range of Goals For and range of Goals against
+rng_For <- range(combined_goals$FTotal)
+rng_Against <- range(combined_goals$ATotal)
+rng_For
+rng_Against
+```
+
+## Data breakouts
+From here we can breakdown the results a bit further by looking at the goal distribution across seasons.
+```{r ranges of goals boxplots overall, comment = "#", fig.height = 8.5, fig.width = 11, fig.align = "left"}
+For_overall <- ggplot(combined_goals, aes(x = seasons_rep, y = FTotal, fill = seasons_rep)) +
+               geom_boxplot() +
+               geom_smooth(method = "loess", aes(group = 1), se = FALSE, color = "black", lty = 2) +
+               ylab("Number of goals") +
+               xlab("Season") +
+               ylim(rng_Against[1] - 0.10, rng_For[2] + 0.10) +
+               labs(title = "Annual distribution of total team goals scored") +
+               guides(fill = FALSE)
+
+Against_overall <- ggplot(combined_goals, aes(x = seasons_rep, y = ATotal, fill = seasons_rep)) +
+                   geom_boxplot() +
+                   geom_smooth(method = "loess", aes(group = 1), se = FALSE, color = "black", lty = 2) +
+                   ylab("Number of goals") +
+                   xlab("Season") +
+                   ylim(rng_Against[1] - 0.10, rng_For[2] + 0.10) +
+                   labs(title = "Annual distribution of total team goals allowed") +
+                   guides(fill = FALSE)
+
+#plot annual total goals for and total goals against across all teams
+g <- grid.arrange(For_overall,Against_overall, nrow = 1, ncol =2)
+```
+
+### Do we see changes in goals for different groups?
+An interesting aspect to the English Premier League is the process of promotion and relegation. The bottom 3 teams for each season are relegated to the 2nd tier division of English soccer, i.e. English Championship. Additionally, the top 6 teams for each season qualify for different tournaments that take place both within English soccer, i.e. Europa League, and across Europe, i.e. Champions' League. 
+
+A natural question is to then ask do we see changes in these groups of teams? 
+```{r ranges of goals scored boxplots group breakouts, comment = "#", fig.height = 8.5, fig.width = 13, fig.align = "left"}
+#goals scored by top 6 teams at end of season, i.e. teams that qualify for either Champions' League or 
+#Europa League
+For_top6 <- combined_goals %>%
+filter(Position <= 6) %>%
+ggplot(data = ., aes(x = seasons_rep, y = FTotal, fill = seasons_rep)) +
+  geom_boxplot() +
+  geom_smooth(method = "loess", aes(group = 1), se = FALSE, color = "black", lty = 2) +
+  ylab("Number of goals") +
+  xlab("Season") +
+  ylim(rng_Against[1] - 0.10, rng_For[2] + 0.10) +
+  labs(title = "Annual distribution of total team goals scored", subtitle = "Includes only the top 6 teams per year") +
+  guides(fill = FALSE)
+
+#goals scored by teams ranked 7 - 17 at end of season
+For_Mids <- combined_goals %>%
+  filter(Position >= 7 & Position <= 17) %>%
+  ggplot(data = ., aes(x = seasons_rep, y = FTotal, fill = seasons_rep)) +
+  geom_boxplot() +
+  geom_smooth(method = "loess", aes(group = 1), se = FALSE, color = "black", lty = 2) +
+  ylab("Number of goals") +
+  xlab("Season") + 
+  ylim(rng_Against[1] - 0.10, rng_For[2] + 0.10) +
+  labs(title = "Annual distribution of total team goals scored", subtitle = "Includes only teams ranked 7 - 17 annually") +
+  guides(fill = FALSE)
+
+#look at goals scored by bottom 3 teams (i.e. those who are relegated at end of season) 
+For_bottom3 <- combined_goals %>%
+  filter(Position >= 18) %>%
+  ggplot(data = ., aes(x = seasons_rep, y = FTotal, fill = seasons_rep)) +
+  geom_boxplot() +
+  geom_smooth(method = "loess", aes(group = 1), se = FALSE, color = "black", lty = 2) +
+  ylab("Number of goals") +
+  xlab("Season") +
+  ylim(rng_Against[1] - 0.10, rng_For[2] + 0.10) +
+  labs(title = "Annual distribution of total team goals scored", subtitle = "Includes only the bottom 3 teams per year") +
+  guides(fill = FALSE)
+
+#plot annual total goals for broken out by top 6 and bottom 3 teams
+g <- grid.arrange(For_top6, For_Mids, For_bottom3, nrow = 1, ncol = 3)
+```
+
