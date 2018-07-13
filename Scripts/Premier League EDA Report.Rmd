@@ -27,6 +27,8 @@ head(combined_goals)
 ```
 
 Now let's take a look at all of the teams in the dataset and the number of seasons they have been in the Premier League for the last 10 years.
+
+
 ```{r total seasons plot, echo=FALSE}
 #plot number of instances of each team was in the Premier League from 2008 - 2018
 combined_goals %>%
@@ -56,7 +58,9 @@ rng_Against
 
 ## Data breakouts
 From here we can breakdown the results a bit further by looking at the goal distribution across seasons.
-```{r ranges of goals boxplots overall, comment = "#", fig.height = 8.5, fig.width = 11, fig.align = "left"}
+
+
+```{r ranges of goals boxplots overall, echo = FALSE, comment = "#", fig.height = 8.5, fig.width = 11, fig.align = "left"}
 For_overall <- ggplot(combined_goals, aes(x = seasons_rep, y = FTotal, fill = seasons_rep)) +
                geom_boxplot() +
                geom_smooth(method = "loess", aes(group = 1), se = FALSE, color = "black", lty = 2) +
@@ -83,7 +87,9 @@ g <- grid.arrange(For_overall,Against_overall, nrow = 1, ncol =2)
 An interesting aspect to the English Premier League is the process of promotion and relegation. The bottom 3 teams for each season are relegated to the 2nd tier division of English soccer, i.e. English Championship. Additionally, the top 6 teams for each season qualify for different tournaments that take place both within English soccer, i.e. Europa League, and across Europe, i.e. Champions' League. 
 
 A natural question is to then ask do we see changes in these groups of teams? 
-```{r ranges of goals scored boxplots group breakouts, comment = "#", fig.height = 8.5, fig.width = 13, fig.align = "left"}
+
+
+```{r ranges of goals scored boxplots group breakouts, echo = FALSE, comment = "#", fig.height = 8.5, fig.width = 13, fig.align = "left"}
 #goals scored by top 6 teams at end of season, i.e. teams that qualify for either Champions' League or 
 #Europa League
 For_top6 <- combined_goals %>%
