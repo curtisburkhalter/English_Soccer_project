@@ -37,7 +37,7 @@ seasons_rep <- rep(seasons, each = 20)
 combined_goals <- cbind(combined_goals,seasons_rep)
 
 #write the file to the 'Data' directory
-write_csv(combined_goals,here("English_Soccer_project","Data","combined_goals"), col_names = TRUE)
+write_csv(combined_goals,here("English_Soccer_project","Data","combined_goals.csv"), col_names = TRUE)
 
 #get the EPL_Fouls datasets from Google sheets
 fouls1718 <- gs_title("EPL_Fouls1718")
@@ -74,7 +74,7 @@ seasons_rep <- rep(seasons, each = 20)
 combined_fouls <- cbind(combined_fouls,seasons_rep)
 
 #write the file to the 'Data' directory
-write_csv(combined_fouls,here("English_Soccer_project","Data","combined_fouls"), col_names = TRUE)
+write_csv(combined_fouls,here("English_Soccer_project","Data","combined_fouls.csv"), col_names = TRUE)
 
 #get the EPL_Corners datasets from Google sheets
 corners1718 <- gs_title("EPL_Corners1718")
@@ -111,4 +111,4 @@ seasons_rep <- rep(seasons, each = 20)
 combined_corners <- cbind(combined_corners,seasons_rep)
 
 #write the file to the 'Data' directory
-write_csv(combined_corners,here("English_Soccer_project","Data","combined_corners"), col_names = TRUE)
+write_csv(combined_corners,here("English_Soccer_project","Data","combined_corners.csv"), col_names = TRUE)
