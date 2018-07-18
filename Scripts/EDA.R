@@ -371,7 +371,6 @@ combined_goals %>%
 
 #ggsave("GoalDifferentialSubsetOfTeams_LineGraphs.png", path = here("English_Soccer_project","EDA_Figures","Goals_Figures"), device = "png", dpi = 400)
 
-
 #look at relationship between goals for and goals against overall
   ggplot(combined_goals, aes(x = ATotal, y = FTotal)) +
   geom_point(aes(color = seasons_rep)) +
@@ -526,7 +525,7 @@ ggplot(combined_fouls, aes(x = TotFouls_Agst, y = TotFouls_Cmt)) +
   xlab("Fouls Against") +
   ylab("Fouls Committed") 
 
-ggsave("RelationshipBtwnGlsForvsAgainstOverall.png", path = here("English_Soccer_project","EDA_Figures","Goals_Figures"), device = "png", dpi = 400)
+ggsave("RelationshipBtwnGlsForvsAgainstOverall.png", path = here("English_Soccer_project","EDA_Figures","Fouls_Figures"), device = "png", dpi = 400)
 
 #look at relationship between goals for and goals against broken out by 
 combined_fouls %>%
@@ -538,4 +537,115 @@ combined_fouls %>%
   ylab("Fouls Committed") +
   labs(title = "Relationship between total fouls committed vs. fouls against", subtitle = "Results broken out by season") 
 
-ggsave("RelationshipBtwnGlsForvsAgainstByTeam.png", path = here("English_Soccer_project","EDA_Figures","Goals_Figures"), device = "png", dpi = 400)
+ggsave("RelationshipBtwnGlsForvsAgainstByTeam.png", path = here("English_Soccer_project","EDA_Figures","Fouls_Figures"), device = "png", dpi = 400)
+
+#calculate foul differential
+combined_fouls$foul_diff <- combined_fouls$TotFouls_Cmt - combined_fouls$TotFouls_Agst
+
+#look at range in foul differential
+rng_fouldff <- range(combined_fouls$foul_diff)
+
+#create figures for foul differential for each of the 3 subgroups created above
+FD_top6 <- combined_fouls %>%
+  filter(Position <= 6) %>%
+  ggplot(data = ., aes(x = seasons_rep, y = foul_diff, fill = seasons_rep)) +
+  geom_boxplot() +
+  geom_smooth(method = "loess", aes(group = 1), se = FALSE, color = "black", lty = 2) +
+  ylab("Foul differential") +
+  xlab("Season") +
+  ylim(rng_fouldff[1] - 5, rng_fouldff[2] + 5) +
+  labs(title = "Annual distribution of foul differential across all teams", subtitle = "Includes only the top 6 teams per year") +
+  guides(fill = FALSE)
+
+
+#look at fouls scored by teams ranked 6 - 17 at end of season
+FD_Mids <- combined_fouls %>%
+  filter(Position >= 7 & Position <= 17) %>%
+  ggplot(data = ., aes(x = seasons_rep, y = foul_diff, fill = seasons_rep)) +
+  geom_boxplot() +
+  geom_smooth(method = "loess", aes(group = 1), se = FALSE, color = "black", lty = 2) +
+  ylab("Foul differential") +
+  xlab("Season") +
+  ylim(rng_fouldff[1] - 5, rng_fouldff[2] + 5) +
+  labs(title = "Annual distribution of foul differential across all teams", subtitle = "Includes only teams ranked 7 - 17 annually") +
+  guides(fill = FALSE)
+
+#look at fouls allowed by bottom 3 teams (i.e. those who are relegated at end of season) for changes
+#through time; question being are the bottom 3 teams scoring more/less fouls through time
+FD_bottom3 <- combined_fouls %>%
+  filter(Position >= 18) %>%
+  ggplot(data = ., aes(x = seasons_rep, y = foul_diff, fill = seasons_rep)) +
+  geom_boxplot() +
+  geom_smooth(method = "loess", aes(group = 1), se = FALSE, color = "black", lty = 2) +
+  ylab("Foul differential") +
+  xlab("Season") +
+  ylim(rng_fouldff[1] - 5, rng_fouldff[2] + 5) +
+  labs(title = "Annual distribution of foul differential across all teams", subtitle = "Includes only the bottom 3 teams per year") +
+  guides(fill = FALSE) 
+
+#plot annual total fouls against broken out by top 6 and bottom 3 teams
+g <- grid.arrange(FD_top6, FD_Mids, FD_bottom3, nrow = 1, ncol = 3)
+
+ggsave("FoulDifferentialAcrossSeasons_BoxPlots.png", g, path = here("English_Soccer_project","EDA_Figures","Fouls_Figures"), device = "png", dpi = 400)
+
+
+combined_fouls %>%
+  group_by(Team) %>%
+  summarize(tot_seasons = n()) %>%
+  filter(tot_seasons > 7) %>%
+  left_join(., combined_fouls, by = c("Team", "Team")) %>%
+  mutate(year = as.numeric(paste("20",substr(seasons_rep,4,5),sep = ""))) %>%
+  ggplot(., aes(x = year, y = foul_diff, color = Team)) +
+  geom_line(lwd = 0.75)+
+  geom_point(color = "black") +
+  geom_hline(yintercept = 0, lwd = 0.75, lty = 2) +
+  ylab("Foul differential") +
+  xlab("Year") +
+  guides(color = FALSE) +
+  facet_wrap(~Team) +
+  labs(title = "Foul differential by season",subtitle = "Only includes those teams that were in the Premier League 8 of the last 10 seasons")
+
+ggsave("FoulDifferentialSubsetOfTeams_LineGraphs.png", path = here("English_Soccer_project","EDA_Figures","Fouls_Figures"), device = "png", dpi = 400)
+
+#look at relationship between fouls for and fouls against overall
+ggplot(combined_fouls, aes(x = TotFouls_Agst, y = TotFouls_Cmt)) +
+  geom_point(aes(color = seasons_rep)) +
+  geom_smooth(method = "loess", se = FALSE, aes(x = TotFouls_Agst, y = TotFouls_Cmt), color = "black", lty = 2) +
+  labs(color = "Season", title = "Relationship between total fouls committed vs. fouls against" , subtitle = "Relationship modeled across all seasons") +
+  xlab("Fouls Against") +
+  ylab("Fouls Committed") 
+
+ggsave("RelationshipBtwnFlsForvsAgainstOverall.png", path = here("English_Soccer_project","EDA_Figures","Fouls_Figures"), device = "png", dpi = 400)
+
+#look at relationship between fouls for and fouls against broken out by 
+combined_fouls %>%
+  ggplot(., aes(x = TotFouls_Agst, y = TotFouls_Cmt)) +
+  geom_point(color = seasons_rep) +
+  geom_smooth(method = "loess", se = FALSE, color = "black", lty = 2) +
+  facet_wrap(~seasons_rep) +
+  xlab("Fouls Against") +
+  ylab("Fouls Committed") +
+  labs(title = "Relationship between total fouls committed vs. fouls against", subtitle = "Results broken out by season") 
+
+ggsave("RelationshipBtwnFlsForvsAgainstByTeam.png", path = here("English_Soccer_project","EDA_Figures","Fouls_Figures"), device = "png", dpi = 400)
+
+
+#look at relationship between fouls committed/against vs. position in table
+FoulsCmt <- ggplot(combined_fouls, aes(x = Position, y = TotFouls_Cmt, color = as.factor(combined_fouls$Position))) +
+  geom_point() +
+  geom_smooth(method = "loess", se = FALSE, color = "black", lty = 2, aes(group = 1)) +
+  xlab("Position in table") +
+  ylab("Total fouls committed") +
+  labs(title = "Relationship between position in table and total fouls committed", subtitle = "Relationship modeled across all seasons") +
+  guides(color = FALSE)
+
+FoulsAgst <- ggplot(combined_fouls, aes(x = Position, y = TotFouls_Agst, color = as.factor(combined_fouls$Position))) +
+  geom_point() +
+  geom_smooth(method = "loess", se = FALSE, color = "black", lty = 2, aes(group = 1)) +
+  xlab("Position in table") +
+  ylab("Total fouls against") +
+  labs(color = "Table Position", title = "Relationship between position in table and total fouls against", subtitle = "Relationship modeled across all seasons")
+
+g <- grid.arrange(FoulsCmt, FoulsAgst, nrow = 1)
+
+ggsave("TablePositionVsFoulsAgainstCmtCombinedOverall.png", g, path = here("English_Soccer_project","EDA_Figures","Fouls_Figures") , device = "png", dpi = 400)
