@@ -617,7 +617,7 @@ ggplot(combined_fouls, aes(x = TotFouls_Agst, y = TotFouls_Cmt)) +
 
 ggsave("RelationshipBtwnFlsForvsAgainstOverall.png", path = here("English_Soccer_project","EDA_Figures","Fouls_Figures"), device = "png", dpi = 400)
 
-#look at relationship between fouls for and fouls against broken out by 
+#look at relationship between fouls for and fouls against broken out by  seasons
 combined_fouls %>%
   ggplot(., aes(x = TotFouls_Agst, y = TotFouls_Cmt)) +
   geom_point(color = seasons_rep) +
@@ -649,3 +649,34 @@ FoulsAgst <- ggplot(combined_fouls, aes(x = Position, y = TotFouls_Agst, color =
 g <- grid.arrange(FoulsCmt, FoulsAgst, nrow = 1)
 
 ggsave("TablePositionVsFoulsAgainstCmtCombinedOverall.png", g, path = here("English_Soccer_project","EDA_Figures","Fouls_Figures") , device = "png", dpi = 400)
+
+#LOOK AT FOULS DIFFERENTIAL AS A FUNCTION OF TABLE POSITION
+#overall
+ggplot(combined_fouls, aes(x = Position, y = foul_diff, color = as.factor(Position))) +
+  geom_point() +
+  geom_hline(yintercept = 0, color = "white", lwd = 2, alpha = 0.5) +
+  geom_vline(xintercept = 10, color = "white", lwd = 2, alpha = 0.5) +
+  geom_smooth(method = "loess", se = FALSE, color = "black", lty = 2, aes(group = 1)) +
+  xlab("Position in table") +
+  ylab("Foul differential") +
+  labs(color = "Season", title = "Relationship between position in table and foul differential", subtitle = "Relationship modeled across all seasons") +
+  guides(color = FALSE)
+
+ggsave("TablePositionVsFoulDifferentialOverall.png", path = here("English_Soccer_project","EDA_Figures","Fouls_Figures") , device = "png", dpi = 400)
+
+#broken out by season; I added horizontal lines at y = 0 and x = 10. These positions 
+#were somewhat difficult to see so I did plot them in a thicker white line with some
+#transparency
+combined_fouls %>%
+  ggplot(., aes(x = Position, y = foul_diff)) +
+  geom_point(color = seasons_rep) +
+  geom_hline(yintercept = 0, color = "white", lwd = 2, alpha = 0.5) +
+  geom_vline(xintercept = 10, color = "white", lwd = 2, alpha = 0.5) +
+  geom_smooth(method = "loess", se = FALSE, color = "black", lty = 2) +
+  facet_wrap(~seasons_rep) +
+  xlab("Position") +
+  ylab("Foul differential") +
+  labs(title = "Relationship between table position vs. foul differential", subtitle = "Results broken out by season") 
+
+ggsave("TablePositionVsFoulDifferentialBySeason.png", path = here("English_Soccer_project","EDA_Figures","Fouls_Figures") , device = "png", dpi = 400)
+
