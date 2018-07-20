@@ -9,6 +9,7 @@ suppressMessages(library(scales))
 combined_goals <- read_csv(here("English_Soccer_project","Data", "combined_goals.csv"))
 combined_fouls <- read_csv(here("English_Soccer_project","Data", "combined_fouls.csv"))
 combined_corners <- read_csv(here("English_Soccer_project","Data", "combined_corners.csv"))
+combined_shots <- read_csv(here("English_Soccer_project","Data","combined_shots.csv"))
 
 #insert a "/" character into the seasons_rep column
 combined_goals$seasons_rep <- paste(substr(combined_goals$seasons_rep,1,2),"/",substr(combined_goals$seasons_rep,3,4),sep="")
@@ -37,6 +38,25 @@ ggplot(data = ., aes(x = reorder(Team,-Total), y = Total, fill = Total)) +
   ylab("Total seasons in Premier League from 2008 - 2018")
 
 #ggsave("All_PL_Teams0818.png", path = here("English_Soccer_project","EDA_Figures","Goals_Figures"), device = "png", dpi = 400)
+
+#create time series plot of table position by season for each team
+combined_goals %>%
+  group_by(Team) %>%
+  summarize(tot_seasons = n()) %>%
+  left_join(., combined_goals, by = c("Team", "Team")) %>%
+  arrange(., desc(tot_seasons)) %>%
+  mutate(year = as.numeric(paste("20",substr(seasons_rep,4,5),sep = ""))) %>%
+  mutate(facTeam = factor(Team, levels = unique(Team[order(-tot_seasons)], ordered = TRUE))) %>%
+  ggplot(., aes(x = year, y = Position, color = Team)) +
+  geom_line(lwd = 0.75)+
+  geom_point(color = "black") +
+  geom_hline(yintercept = 18, lwd = 2, lty = 1, color = "white", alpha = 0.5) +
+  ylab("Position in table") +
+  ylim(20,1)+
+  xlab("Year") +
+  guides(color = FALSE) +
+  facet_wrap(~facTeam) +
+  labs(title = "Position in table for last 10 years",subtitle = "Only includes those teams that were in the Premier League 8 of the last 10 seasons")
 
 #look at distribution of goals for and goals against for each year
 For_overall <- ggplot(combined_goals, aes(x = seasons_rep, y = FTotal, fill = seasons_rep)) +
