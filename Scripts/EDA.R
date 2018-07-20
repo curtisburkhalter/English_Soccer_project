@@ -680,3 +680,291 @@ combined_fouls %>%
 
 ggsave("TablePositionVsFoulDifferentialBySeason.png", path = here("English_Soccer_project","EDA_Figures","Fouls_Figures") , device = "png", dpi = 400)
 
+#######################################################################
+#######################################################################
+#move away from looking at fouls and begin looking at corners
+#######################################################################
+#######################################################################
+rng_cornersFor <- range(combined_corners$CornersFor)
+rng_cornersAgst <- range(combined_corners$CornersAgst)
+rng_cornersFor
+rng_cornersAgst
+
+Corners_For <- combined_corners %>%
+  ggplot(., aes(seasons_rep, y = CornersFor, fill = seasons_rep)) +
+  geom_boxplot() +
+  geom_smooth(method = "loess", aes(group = 1), lty = 2, color = "black", se = FALSE) +
+  xlab("Season") +
+  ylab("Total corners ") +
+  ylim(rng_cornersAgst[1] - 5,rng_cornersFor[2] + 5) +
+  labs(title = "Distribution of total corners for across all teams") +
+  guides(fill = FALSE)
+
+Corners_Agst <- combined_corners %>%
+  ggplot(., aes(seasons_rep, y = CornersAgst, fill = seasons_rep)) +
+  geom_boxplot() +
+  geom_smooth(method = "loess", aes(group = 1), lty = 2, color = "black", se = FALSE) +
+  xlab("Season") +
+  ylab("Total corners ") +
+  ylim(rng_cornersAgst[1] - 5,rng_cornersFor[2] + 5) +
+  labs(title = "Distribution of total corners against across all teams") +
+  guides(fill = FALSE)
+
+g <- grid.arrange(Corners_For, Corners_Agst, nrow = 1)
+
+ggsave("TotalCornersForAgainstOverall.png", g, path = here("English_Soccer_project","EDA_Figures","Corners_Figures"), device = "png", dpi = 400)
+
+#although somewhat difficult to see there are definitely differences in the numbers of
+#corners for and , but the overall pattern looks roughly the same
+
+#look at corners  by top 6 teams (i.e. those who qualify for either Champions League or Europa League) for changes
+#through time; question being are the top 6 teams scoring more/less corners through time
+CornersFor_top6 <- combined_corners %>%
+  filter(Position <= 6) %>%
+  ggplot(data = ., aes(x = seasons_rep, y = CornersFor, fill = seasons_rep)) +
+  geom_boxplot() +
+  geom_smooth(method = "loess", aes(group = 1), se = FALSE, color = "black", lty = 2) +
+  ylab("Number of corners") +
+  xlab("Season") +
+  ylim(rng_cornersAgst[1] - 5,rng_cornersFor[2] + 5) +
+  labs(title = "Annual distribution of total team corners for ", subtitle = "Includes only the top 6 teams per year") +
+  guides(fill = FALSE)
+
+#look at corners  by teams ranked 7 - 17 at end of season
+CornersFor_Mids <- combined_corners %>%
+  filter(Position >= 7 & Position <= 17) %>%
+  ggplot(data = ., aes(x = seasons_rep, y = CornersFor, fill = seasons_rep)) +
+  geom_boxplot() +
+  geom_smooth(method = "loess", aes(group = 1), se = FALSE, color = "black", lty = 2) +
+  ylab("Number of corners") +
+  xlab("Season") + 
+  ylim(rng_cornersAgst[1] - 5,rng_cornersFor[2] + 5) +
+  labs(title = "Annual distribution of total team corners for ", subtitle = "Includes only teams ranked 7 - 17 annually") +
+  guides(fill = FALSE)
+
+#look at corners  by bottom 3 teams (i.e. those who are relegated at end of season) for changes
+#through time; question being are the bottom 3 teams scoring more/less corners through time
+CornersFor_bottom3 <- combined_corners %>%
+  filter(Position >= 18) %>%
+  ggplot(data = ., aes(x = seasons_rep, y = CornersFor, fill = seasons_rep)) +
+  geom_boxplot() +
+  geom_smooth(method = "loess", aes(group = 1), se = FALSE, color = "black", lty = 2) +
+  ylab("Number of corners") +
+  xlab("Season") +
+  ylim(rng_cornersAgst[1] - 5,rng_cornersFor[2] + 5) +
+  labs(title = "Annual distribution of total team corners for ", subtitle = "Includes only the bottom 3 teams per year") +
+  guides(fill = FALSE)
+
+#plot annual total corners for broken out by top 6 and bottom 3 teams
+g <- grid.arrange(CornersFor_top6, CornersFor_Mids, CornersFor_bottom3, nrow = 1, ncol = 3)
+
+ggsave("Total_team_cornersFor_ByGroup.png", g, path = here("English_Soccer_project","EDA_Figures","Corners_Figures"), device = "png", dpi = 400)
+
+#look at corners  by top 6 teams (i.e. those who qualify for either Champions League or Europa League) for changes
+#through time; question being are the top 6 teams scoring more/less corners through time
+CornersAgst_top6 <- combined_corners %>%
+  filter(Position <= 6) %>%
+  ggplot(data = ., aes(x = seasons_rep, y = CornersAgst, fill = seasons_rep)) +
+  geom_boxplot() +
+  geom_smooth(method = "loess", aes(group = 1), se = FALSE, color = "black", lty = 2) +
+  ylab("Number of corners") +
+  xlab("Season") +
+  ylim(rng_cornersAgst[1] - 5,rng_cornersFor[2] + 5) +
+  labs(title = "Annual distribution of total team corners against ", subtitle = "Includes only the top 6 teams per year") +
+  guides(fill = FALSE)
+
+#look at corners  by teams ranked 7 - 17 at end of season
+CornersAgst_Mids <- combined_corners %>%
+  filter(Position >= 7 & Position <= 17) %>%
+  ggplot(data = ., aes(x = seasons_rep, y = CornersAgst, fill = seasons_rep)) +
+  geom_boxplot() +
+  geom_smooth(method = "loess", aes(group = 1), se = FALSE, color = "black", lty = 2) +
+  ylab("Number of corners") +
+  xlab("Season") + 
+  ylim(rng_cornersAgst[1] - 5,rng_cornersFor[2] + 5) +
+  labs(title = "Annual distribution of total team corners against", subtitle = "Includes only teams ranked 7 - 17 annually") +
+  guides(fill = FALSE)
+
+#look at corners  by bottom 3 teams (i.e. those who are relegated at end of season) for changes
+#through time; question being are the bottom 3 teams scoring more/less corners through time
+CornersAgst_bottom3 <- combined_corners %>%
+  filter(Position >= 18) %>%
+  ggplot(data = ., aes(x = seasons_rep, y = CornersAgst, fill = seasons_rep)) +
+  geom_boxplot() +
+  geom_smooth(method = "loess", aes(group = 1), se = FALSE, color = "black", lty = 2) +
+  ylab("Number of corners") +
+  xlab("Season") +
+  ylim(rng_cornersAgst[1] - 5,rng_cornersFor[2] + 5) +
+  labs(title = "Annual distribution of total team corners against", subtitle = "Includes only the bottom 3 teams per year") +
+  guides(fill = FALSE)
+
+#plot annual total corners for broken out by top 6 and bottom 3 teams
+g <- grid.arrange(CornersAgst_top6, CornersAgst_Mids, CornersAgst_bottom3, nrow = 1, ncol = 3)
+
+ggsave("Total_team_corners_AgainstByGroup.png", g, path = here("English_Soccer_project","EDA_Figures","Corners_Figures"), device = "png", dpi = 400)
+
+
+#look at relationship between corners for and corners  overall
+ggplot(combined_corners, aes(x = CornersAgst, y = CornersFor)) +
+  geom_point(aes(color = seasons_rep)) +
+  geom_smooth(method = "loess", se = FALSE, aes(x = CornersAgst, y = CornersFor), color = "black", lty = 2) +
+  labs(color = "Season", title = "Relationship between total corners for vs. corners against " , subtitle = "Relationship modeled across all seasons") +
+  xlab("Corners Against") +
+  ylab("Corners For") 
+
+ggsave("RelationshipBtwnCrnersForvsAgainstOverall.png", path = here("English_Soccer_project","EDA_Figures","Corners_Figures"), device = "png", dpi = 400)
+
+#look at relationship between corners for and corners against broken out by 
+combined_corners %>%
+  ggplot(., aes(x = CornersAgst, y = CornersFor)) +
+  geom_point(color = seasons_rep) +
+  geom_smooth(method = "loess", se = FALSE, color = "black", lty = 2) +
+  facet_wrap(~seasons_rep) +
+  xlab("Corners Against") +
+  ylab("Corners For") +
+  labs(title = "Relationship between total corners for vs. corners against ", subtitle = "Results broken out by season") 
+
+ggsave("RelationshipBtwnCrnersForvsAgainstByTeam.png", path = here("English_Soccer_project","EDA_Figures","Corners_Figures"), device = "png", dpi = 400)
+
+#calculate corner differential
+combined_corners$corner_diff <- combined_corners$CornersFor - combined_corners$CornersAgst
+
+#look at range in corner differential
+rng_cornerdff <- range(combined_corners$corner_diff)
+rng_cornerdff 
+
+#create figures for corner differential for each of the 3 subgroups created above
+CD_top6 <- combined_corners %>%
+  filter(Position <= 6) %>%
+  ggplot(data = ., aes(x = seasons_rep, y = corner_diff, fill = seasons_rep)) +
+  geom_boxplot() +
+  geom_smooth(method = "loess", aes(group = 1), se = FALSE, color = "black", lty = 2) +
+  ylab("Corner differential") +
+  xlab("Season") +
+  ylim(rng_cornerdff[1] - 5, rng_cornerdff[2] + 5) +
+  labs(title = "Annual distribution of corner differential across all teams", subtitle = "Includes only the top 6 teams per year") +
+  guides(fill = FALSE)
+
+
+#look at corners scored by teams ranked 6 - 17 at end of season
+CD_Mids <- combined_corners %>%
+  filter(Position >= 7 & Position <= 17) %>%
+  ggplot(data = ., aes(x = seasons_rep, y = corner_diff, fill = seasons_rep)) +
+  geom_boxplot() +
+  geom_smooth(method = "loess", aes(group = 1), se = FALSE, color = "black", lty = 2) +
+  ylab("Corner differential") +
+  xlab("Season") +
+  ylim(rng_cornerdff[1] - 5, rng_cornerdff[2] + 5) +
+  labs(title = "Annual distribution of corner differential across all teams", subtitle = "Includes only teams ranked 7 - 17 annually") +
+  guides(fill = FALSE)
+
+#look at corners allowed by bottom 3 teams (i.e. those who are relegated at end of season) for changes
+#through time; question being are the bottom 3 teams scoring more/less corners through time
+CD_bottom3 <- combined_corners %>%
+  filter(Position >= 18) %>%
+  ggplot(data = ., aes(x = seasons_rep, y = corner_diff, fill = seasons_rep)) +
+  geom_boxplot() +
+  geom_smooth(method = "loess", aes(group = 1), se = FALSE, color = "black", lty = 2) +
+  ylab("Corner differential") +
+  xlab("Season") +
+  ylim(rng_cornerdff[1] - 5, rng_cornerdff[2] + 5) +
+  labs(title = "Annual distribution of corner differential across all teams", subtitle = "Includes only the bottom 3 teams per year") +
+  guides(fill = FALSE) 
+
+#plot annual total corners  broken out by top 6 and bottom 3 teams
+g <- grid.arrange(CD_top6, CD_Mids, CD_bottom3, nrow = 1, ncol = 3)
+
+ggsave("CornerDifferentialAcrossSeasons_BoxPlots.png", g, path = here("English_Soccer_project","EDA_Figures","Corners_Figures"), device = "png", dpi = 400)
+
+
+combined_corners %>%
+  group_by(Team) %>%
+  summarize(tot_seasons = n()) %>%
+  filter(tot_seasons > 7) %>%
+  left_join(., combined_corners, by = c("Team", "Team")) %>%
+  mutate(year = as.numeric(paste("20",substr(seasons_rep,4,5),sep = ""))) %>%
+  ggplot(., aes(x = year, y = corner_diff, color = Team)) +
+  geom_line(lwd = 0.75)+
+  geom_point(color = "black") +
+  geom_hline(yintercept = 0, lwd = 0.75, lty = 2) +
+  ylab("Corner differential") +
+  xlab("Year") +
+  guides(color = FALSE) +
+  facet_wrap(~Team) +
+  labs(title = "Corner differential by season",subtitle = "Only includes those teams that were in the Premier League 8 of the last 10 seasons")
+
+ggsave("CornerDifferentialSubsetOfTeams_LineGraphs.png", path = here("English_Soccer_project","EDA_Figures","Corners_Figures"), device = "png", dpi = 400)
+
+#look at relationship between corners for and corners against overall
+ggplot(combined_corners, aes(x = CornersAgst, y = CornersFor)) +
+  geom_point(aes(color = seasons_rep)) +
+  geom_smooth(method = "loess", se = FALSE, aes(x = CornersAgst, y = CornersFor), color = "black", lty = 2) +
+  labs(color = "Season", title = "Relationship between total corners for vs. corners against" , subtitle = "Relationship modeled across all seasons") +
+  xlab("Corners Against") +
+  ylab("Corners For") 
+
+ggsave("RelationshipBtwnFlsForvsAgainstOverall.png", path = here("English_Soccer_project","EDA_Figures","Corners_Figures"), device = "png", dpi = 400)
+
+#look at relationship between corners for and corners  broken out by  seasons
+combined_corners %>%
+  ggplot(., aes(x = CornersAgst, y = CornersFor)) +
+  geom_point(color = seasons_rep) +
+  geom_smooth(method = "loess", se = FALSE, color = "black", lty = 2) +
+  facet_wrap(~seasons_rep) +
+  xlab("Corners Against") +
+  ylab("Corners For") +
+  labs(title = "Relationship between total corners for vs. corners against ", subtitle = "Results broken out by season") 
+
+ggsave("RelationshipBtwnFlsForvsAgainstByTeam.png", path = here("English_Soccer_project","EDA_Figures","Corners_Figures"), device = "png", dpi = 400)
+
+
+#look at relationship between corners / vs. position in table
+CornersFor <- ggplot(combined_corners, aes(x = Position, y = CornersFor, color = as.factor(combined_corners$Position))) +
+  geom_point() +
+  geom_smooth(method = "loess", se = FALSE, color = "black", lty = 2, aes(group = 1)) +
+  xlab("Position in table") +
+  ylab("Total corners for ") +
+  labs(title = "Relationship between position in table and total corners for", subtitle = "Relationship modeled across all seasons") +
+  guides(color = FALSE)
+
+CornersAgst <- ggplot(combined_corners, aes(x = Position, y = CornersAgst, color = as.factor(combined_corners$Position))) +
+  geom_point() +
+  geom_smooth(method = "loess", se = FALSE, color = "black", lty = 2, aes(group = 1)) +
+  xlab("Position in table") +
+  ylab("Total corners against") +
+  labs(color = "Table Position", title = "Relationship between position in table and total corners against", subtitle = "Relationship modeled across all seasons")
+
+g <- grid.arrange(CornersFor, CornersAgst, nrow = 1)
+
+ggsave("TablePositionVsCornersAgainstForCombinedOverall.png", g, path = here("English_Soccer_project","EDA_Figures","Corners_Figures") , device = "png", dpi = 400)
+
+#LOOK AT CORNERS DIFFERENTIAL AS A FUNCTION OF TABLE POSITION
+#overall
+ggplot(combined_corners, aes(x = Position, y = corner_diff, color = as.factor(Position))) +
+  geom_point() +
+  geom_hline(yintercept = 0, color = "white", lwd = 2, alpha = 0.5) +
+  geom_vline(xintercept = 10, color = "white", lwd = 2, alpha = 0.5) +
+  geom_smooth(method = "loess", se = FALSE, color = "black", lty = 2, aes(group = 1)) +
+  xlab("Position in table") +
+  ylab("Corner differential") +
+  labs(color = "Season", title = "Relationship between position in table and corner differential", subtitle = "Relationship modeled across all seasons") +
+  guides(color = FALSE)
+
+ggsave("TablePositionVsCornerDifferentialOverall.png", path = here("English_Soccer_project","EDA_Figures","Corners_Figures") , device = "png", dpi = 400)
+
+#broken out by season; I added horizontal lines at y = 0 and x = 10. These positions 
+#were somewhat difficult to see so I did plot them in a thicker white line with some
+#transparency
+combined_corners %>%
+  ggplot(., aes(x = Position, y = corner_diff)) +
+  geom_point(color = seasons_rep) +
+  geom_hline(yintercept = 0, color = "white", lwd = 2, alpha = 0.5) +
+  geom_vline(xintercept = 10, color = "white", lwd = 2, alpha = 0.5) +
+  geom_smooth(method = "loess", se = FALSE, color = "black", lty = 2) +
+  facet_wrap(~seasons_rep) +
+  xlab("Position") +
+  ylab("Corner differential") +
+  labs(title = "Relationship between table position vs. corner differential", subtitle = "Results broken out by season") 
+
+ggsave("TablePositionVsCornerDifferentialBySeason.png", path = here("English_Soccer_project","EDA_Figures","Corners_Figures") , device = "png", dpi = 400)
+
