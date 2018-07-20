@@ -112,3 +112,40 @@ combined_corners <- cbind(combined_corners,seasons_rep)
 
 #write the file to the 'Data' directory
 write_csv(combined_corners,here("English_Soccer_project","Data","combined_corners.csv"), col_names = TRUE)
+
+#get the EPL_Shots datasets from Google sheets
+shots1718 <- gs_title("EPL_Shots1718")
+shots1617 <- gs_title("EPL_Shots1617")
+shots1516 <- gs_title("EPL_Shots1516")
+shots1415 <- gs_title("EPL_Shots1415")
+shots1314 <- gs_title("EPL_Shots1314")
+shots1213 <- gs_title("EPL_Shots1213")
+shots1112 <- gs_title("EPL_Shots1112")
+shots1011 <- gs_title("EPL_Shots1011")
+shots0910 <- gs_title("EPL_Shots0910")
+shots0809 <- gs_title("EPL_Shots0809")
+
+#read the sheets into R
+shots1718 <- gs_read(ss=shots1718)
+shots1617 <- gs_read(ss=shots1617)
+shots1516 <- gs_read(ss=shots1516)
+shots1415 <- gs_read(ss=shots1415)
+shots1314 <- gs_read(ss=shots1314)
+shots1213 <- gs_read(ss=shots1213)
+shots1112 <- gs_read(ss=shots1112)
+shots1011 <- gs_read(ss=shots1011)
+shots0910 <- gs_read(ss=shots0910)
+shots0809 <- gs_read(ss=shots0809)
+
+#rbind together all the seasons
+combined_shots <- rbind(shots1718,shots1617,shots1516,shots1415,shots1314,shots1213,shots1112,shots1011,shots0910,shots0809)
+
+#add season index column to combined
+seasons <- c("1718","1617","1516","1415","1314","1213","1112","1011","0910","0809")
+
+seasons_rep <- rep(seasons, each = 20)
+
+combined_shots <- cbind(combined_shots,seasons_rep)
+
+#write the file to the 'Data' directory
+write_csv(combined_shots,here("English_Soccer_project","Data","combined_shots.csv"), col_names = TRUE)
